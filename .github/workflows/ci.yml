@@ -1,0 +1,27 @@
+name: CI
+
+on: [pull_request, push]
+
+jobs: 
+  continuos-integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: mbstring, bcmath, gd, intl, pdo, zip
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: |
+          composer install
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run Tests
+        run: php artisan test
