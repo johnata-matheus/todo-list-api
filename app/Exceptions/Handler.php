@@ -2,8 +2,9 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -31,17 +32,16 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof ApiException) {
+        if ($exception instanceof ModelNotFoundException) {
             return response()->json([
-                'errors' => $exception->getMessage(),
-            ], $exception->getStatusCode());
+                'message' => 'Resource not found',
+            ], 404);
         }
 
-        if ($exception instanceof ValidationException) {
+        if ($exception instanceof AuthorizationException) {
             return response()->json([
-                'message' => 'Validation failed',
-                'errors'  => $exception->errors(),
-            ], 422);
+                'message' => 'This action is unauthorized.',
+            ], 403);
         }
 
         return parent::render($request, $exception);
