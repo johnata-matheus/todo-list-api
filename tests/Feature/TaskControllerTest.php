@@ -5,7 +5,10 @@ use App\Models\{Task, User};
 use function Pest\Laravel\{actingAs, getJson};
 
 it('return all tasks', function () {
-    Task::factory()->count(3)->create();
+    $user = User::factory()->create();
+    actingAs($user);
+
+    Task::factory()->count(3)->create(['user_id' => $user->id]);
 
     getJson(route('tasks.index'))
         ->assertStatus(200)
